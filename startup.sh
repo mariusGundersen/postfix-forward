@@ -12,14 +12,19 @@ MAIL_HOST
   hostname of your server
   eg mail.example.com
 VIRTUAL_ALIAS_DOMAINS
-  the domains you want to receive emails for,
-  separated by spaces
+  the domains you want to receive emails for, separated by spaces
   eg example.com mysite.com etcetra.net
 VIRTUAL_ALIAS_MAPS
   maping between incoming emails and where to
   forward them. Use @mysite.com for catch all
   emails. Separate multiple rules using ;
   eg me@example.com me@gmail.com;@etcetra.net my-email@gmail.com
+SMTP_USERNAME
+SMTP_PASSWORD
+  authentication for sending mail on behalf on this host
+  username should be without domain part, the domain will
+  be set to MAIL_HOST
+
 
 example:
   docker run -d -p 25:25\
@@ -41,41 +46,7 @@ then
   exit 0
 fi
 
-echo ">> reducing the amount of spam processed by postfix"
-# https://www.howtoforge.com/virtual_postfix_antispam
-
-postconf -e smtpd_helo_required=yes
-postconf -e strict_rfc821_envelopes=yes
-postconf -e disable_vrfy_command=yes
-
-postconf -e unknown_address_reject_code=554
-postconf -e unknown_hostname_reject_code=554
-postconf -e unknown_client_reject_code=554
-
-postconf -e "smtpd_helo_restrictions=\
-  permit_mynetworks,\
-  reject_non_fqdn_helo_hostname,\
-  reject_unknown_helo_hostname,\
-  reject_invalid_helo_hostname,\
-  permit"
-
-postconf -e "smtpd_recipient_restrictions=\
-  reject_invalid_hostname,\
-  reject_non_fqdn_hostname,\
-  reject_non_fqdn_sender,\
-  reject_non_fqdn_recipient,\
-  reject_unknown_sender_domain,\
-  reject_unknown_recipient_domain,\
-  permit_mynetworks,\
-  reject_unauth_destination,\
-  reject_rbl_client cbl.abuseat.org,\
-  reject_rbl_client sbl-xbl.spamhaus.org,\
-  reject_rbl_client bl.spamcop.net, \
-  reject_rhsbl_sender dsn.rfc-ignorant.org,\
-  check_policy_service inet:127.0.0.1:10023,\
-  permit"
-
-echo ">> setting up postfix for $MAIL_HOST"
+echo ">> setting up host and alias"
 
 # add domain
 postconf -e myhostname="$MAIL_HOST"
@@ -98,6 +69,54 @@ cat /etc/postfix/virtual
 # map virtual addresses
 postmap /etc/postfix/virtual
 
+echo ">> setup sasl (authentication of sender)"
+
+useradd -p $(openssl passwd -1 $SMTP_PASSWORD) $SMTP_USERNAME
+
+postconf -e smtpd_sasl_path=smtpd
+postconf -e "smtpd_sasl_local_domain="
+postconf -e "smtpd_sasl_auth_enable=yes"
+postconf -e "smtpd_sasl_security_options=noanonymous"
+postconf -e "broken_sasl_auth_clients=yes"
+postconf -e "inet_interfaces=all"
+
+echo ">> reducing the amount of spam processed by postfix"
+# https://www.howtoforge.com/virtual_postfix_antispam
+
+postconf -e smtpd_helo_required=yes
+postconf -e strict_rfc821_envelopes=yes
+postconf -e disable_vrfy_command=yes
+
+postconf -e unknown_address_reject_code=554
+postconf -e unknown_hostname_reject_code=554
+postconf -e unknown_client_reject_code=554
+
+postconf -e "smtpd_helo_restrictions=\
+  permit_mynetworks,\
+  reject_non_fqdn_helo_hostname,\
+  reject_unknown_helo_hostname,\
+  reject_invalid_helo_hostname,\
+  permit"
+
+postconf -e "smtpd_recipient_restrictions=\
+  permit_sasl_authenticated,\
+  reject_invalid_hostname,\
+  reject_non_fqdn_hostname,\
+  reject_non_fqdn_sender,\
+  reject_non_fqdn_recipient,\
+  reject_unknown_sender_domain,\
+  reject_unknown_recipient_domain,\
+  permit_mynetworks,\
+  reject_unauth_destination,\
+  reject_rbl_client cbl.abuseat.org,\
+  reject_rbl_client sbl-xbl.spamhaus.org,\
+  reject_rbl_client bl.spamcop.net, \
+  reject_rhsbl_sender dsn.rfc-ignorant.org,\
+  check_policy_service inet:127.0.0.1:10023,\
+  permit"
+
+echo ">> setting up postfix for $MAIL_HOST"
+
 echo ">> Setting postgrey options"
 
 echo 'POSTGREY_OPTS="--inet=127.0.0.1:10023 --delay=60"' > /etc/default/postgray
@@ -105,6 +124,8 @@ echo 'POSTGREY_OPTS="--inet=127.0.0.1:10023 --delay=60"' > /etc/default/postgray
 # starting services
 echo ">> starting the services"
 service rsyslog start
+
+service saslauthd start
 
 service postgrey start
 

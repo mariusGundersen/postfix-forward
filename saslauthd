@@ -1,0 +1,5 @@
+START=yes
+
+MECHANISMS="shadow"
+
+OPTIONS="-c -m /var/run/saslauthd"

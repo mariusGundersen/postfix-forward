@@ -13,5 +13,14 @@ EXPOSE 587
 ADD startup.sh /opt/startup.sh
 RUN chmod a+x /opt/startup.sh
 
+ADD saslauthd /etc/default/saslauthd
+ADD sasl/smtpd.conf /etc/postfix/sasl/smtpd.conf
+
+RUN rm -r /var/run/saslauthd/ \
+  && mkdir -p /var/spool/postfix/var/run/saslauthd \
+  && ln -s /var/spool/postfix/var/run/saslauthd /var/run \
+  && chgrp sasl /var/spool/postfix/var/run/saslauthd \
+  && adduser postfix sasl
+
 # Docker startup
 ENTRYPOINT ["/opt/startup.sh"]
