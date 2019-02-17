@@ -74,11 +74,11 @@ echo ">> setup sasl (authentication of sender)"
 useradd -p $(openssl passwd -1 $SMTP_PASSWORD) $SMTP_USERNAME
 
 postconf -e smtpd_sasl_path=smtpd
-postconf -e "smtpd_sasl_local_domain="
-postconf -e "smtpd_sasl_auth_enable=yes"
-postconf -e "smtpd_sasl_security_options=noanonymous"
-postconf -e "broken_sasl_auth_clients=yes"
-postconf -e "inet_interfaces=all"
+postconf -e smtpd_sasl_local_domain=
+postconf -e smtpd_sasl_auth_enable=yes
+postconf -e smtpd_sasl_security_options=noanonymous
+postconf -e broken_sasl_auth_clients=yes
+postconf -e inet_interfaces=all
 
 echo ">> reducing the amount of spam processed by postfix"
 # https://www.howtoforge.com/virtual_postfix_antispam
@@ -90,6 +90,11 @@ postconf -e disable_vrfy_command=yes
 postconf -e unknown_address_reject_code=554
 postconf -e unknown_hostname_reject_code=554
 postconf -e unknown_client_reject_code=554
+
+
+postconf -e smtpd_tls_security_level=may
+postconf -e smtpd_tls_auth_only=yes
+postconf -e smtp_tls_security_level=may
 
 postconf -e "smtpd_helo_restrictions=\
   permit_mynetworks,\
@@ -123,6 +128,7 @@ echo 'POSTGREY_OPTS="--inet=127.0.0.1:10023 --delay=60"' > /etc/default/postgray
 
 # starting services
 echo ">> starting the services"
+
 service rsyslog start
 
 service saslauthd start
