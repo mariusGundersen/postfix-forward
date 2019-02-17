@@ -52,14 +52,14 @@ postconf -e unknown_address_reject_code=554
 postconf -e unknown_hostname_reject_code=554
 postconf -e unknown_client_reject_code=554
 
-postconf -e smtpd_helo_restrictions=\
+postconf -e "smtpd_helo_restrictions=\
   permit_mynetworks,\
   reject_non_fqdn_helo_hostname,\
   reject_unknown_helo_hostname,\
   reject_invalid_helo_hostname,\
-  permit
+  permit"
 
-postconf -e smtpd_recipient_restrictions=\
+postconf -e "smtpd_recipient_restrictions=\
   reject_invalid_hostname,\
   reject_non_fqdn_hostname,\
   reject_non_fqdn_sender,\
@@ -73,7 +73,7 @@ postconf -e smtpd_recipient_restrictions=\
   reject_rbl_client bl.spamcop.net, \
   reject_rhsbl_sender dsn.rfc-ignorant.org,\
   check_policy_service inet:127.0.0.1:10023,\
-  permit
+  permit"
 
 echo ">> setting up postfix for $MAIL_HOST"
 
