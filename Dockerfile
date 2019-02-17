@@ -3,9 +3,11 @@ FROM ubuntu
 RUN echo mail > /etc/hostname
 
 # install
-RUN apt-get update; apt-get install -y postfix postgrey
+ENV DEBIAN_FRONTEND non-interactive
+RUN apt-get update; apt-get install -y postfix postgrey sasl2-bin
 
 EXPOSE 25
+EXPOSE 587
 
 # Add startup script
 ADD startup.sh /opt/startup.sh
