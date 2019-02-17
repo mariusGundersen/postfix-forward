@@ -3,7 +3,7 @@ FROM ubuntu
 RUN echo mail > /etc/hostname
 
 # install
-RUN apt-get update; apt-get install -y postfix
+RUN apt-get update; apt-get install -y postfix postgrey
 
 EXPOSE 25
 
