@@ -113,12 +113,12 @@ postconf -e "smtpd_helo_restrictions=\
   reject_invalid_helo_hostname,\
   permit"
 
-#postconf -e "smtpd_client_restrictions=\
-#  reject_rbl_client cbl.abuseat.org,\
-#  reject_rbl_client sbl-xbl.spamhaus.org,\
-#  reject_rbl_client bl.spamcop.net, \
-#  reject_rhsbl_sender dsn.rfc-ignorant.org,\
-#  "
+postconf -e "smtpd_client_restrictions=\
+  reject_rbl_client cbl.abuseat.org,\
+  reject_rbl_client sbl-xbl.spamhaus.org,\
+  reject_rbl_client bl.spamcop.net, \
+  reject_rhsbl_sender dsn.rfc-ignorant.org,\
+  "
 
 postconf -e "smtpd_recipient_restrictions=\
   permit_sasl_authenticated,\
