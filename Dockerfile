@@ -4,7 +4,7 @@ RUN echo mail > /etc/hostname
 
 # install
 ENV DEBIAN_FRONTEND non-interactive
-RUN apt-get update; apt-get install -y postfix postgrey sasl2-bin
+RUN apt-get update; apt-get install -y postfix postgrey sasl2-bin dnsutils
 
 EXPOSE 25
 EXPOSE 587
