@@ -136,7 +136,7 @@ echo ">> setting up postfix for $MAIL_HOST"
 
 echo ">> Setting postgrey options"
 
-echo 'POSTGREY_OPTS="--inet=127.0.0.1:10023 --delay=60"' > /etc/default/postgray
+echo 'POSTGREY_OPTS="--inet=localhost:10023 --delay=60"' > /etc/default/postgray
 
 # starting services
 echo ">> starting the services"
