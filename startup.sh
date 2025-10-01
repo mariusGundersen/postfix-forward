@@ -80,6 +80,10 @@ postconf -e smtpd_sasl_security_options=noanonymous
 postconf -e broken_sasl_auth_clients=yes
 postconf -e inet_interfaces=all
 
+echo ">> generating certificate"
+
+openssl req -x509 -newkey rsa:4096 -keyout /etc/ssl/ssl-cert-snakeoil.key -out /etc/ssl/ssl-cert-snakeoil.pem -sha256 -days 3650 -nodes -subj "/C=XX/ST=StateName/L=CityName/O=CompanyName/OU=CompanySectionName/CN=$MAIL_HOST"
+
 echo ">> reducing the amount of spam processed by postfix"
 # https://www.howtoforge.com/virtual_postfix_antispam
 
