@@ -127,6 +127,8 @@ postconf -e "smtpd_recipient_restrictions=\
   check_policy_service inet:127.0.0.1:10023,\
   permit"
 
+postconf -e maillog_file=/dev/stdout
+
 echo ">> setting up postfix for $MAIL_HOST"
 
 echo ">> Setting postgrey options"
@@ -140,10 +142,4 @@ service saslauthd start
 
 service postgrey start
 
-service postfix start
-
-# print logs
-echo ">> printing the logs"
-touch /var/log/mail.log /var/log/mail.err /var/log/mail.warn
-chmod a+rw /var/log/mail.*
-tail -F /var/log/mail.*
+postfix start-fg
