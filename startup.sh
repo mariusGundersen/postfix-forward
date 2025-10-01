@@ -136,8 +136,6 @@ echo 'POSTGREY_OPTS="--inet=127.0.0.1:10023 --delay=60"' > /etc/default/postgray
 # starting services
 echo ">> starting the services"
 
-service rsyslog start
-
 service saslauthd start
 
 service postgrey start
