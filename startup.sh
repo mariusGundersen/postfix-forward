@@ -79,6 +79,7 @@ postconf -e smtpd_sasl_auth_enable=yes
 postconf -e smtpd_sasl_security_options=noanonymous
 postconf -e broken_sasl_auth_clients=yes
 postconf -e inet_interfaces=all
+postconf -e inet_protocols=ip4
 
 echo ">> generating certificate"
 
