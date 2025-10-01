@@ -82,7 +82,10 @@ postconf -e inet_interfaces=all
 
 echo ">> generating certificate"
 
-openssl req -x509 -newkey rsa:4096 -keyout /etc/ssl/certs/ssl-cert-snakeoil.key -out /etc/ssl/certs/ssl-cert-snakeoil.pem -sha256 -days 3650 -nodes -subj "/C=XX/ST=StateName/L=CityName/O=CompanyName/OU=CompanySectionName/CN=$MAIL_HOST"
+openssl req -x509 -newkey rsa:4096 -keyout /etc/postfix/ssl-cert.key -out /etc/postfix/ssl-cert.pem -sha256 -days 3650 -nodes -subj "/C=XX/ST=StateName/L=CityName/O=CompanyName/OU=CompanySectionName/CN=$MAIL_HOST"
+
+postconf -e smtpd_tls_chain_files=/etc/postfix/ssl-cert.pem
+postconf -e smtpd_tls_key_file=/etc/postfix/ssl-cert.key
 
 echo ">> reducing the amount of spam processed by postfix"
 # https://www.howtoforge.com/virtual_postfix_antispam
