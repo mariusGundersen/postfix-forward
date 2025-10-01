@@ -87,9 +87,10 @@ openssl req -x509 -newkey rsa:4096 -keyout /etc/postfix/ssl-cert.key -out /etc/p
 
 cat /etc/postfix/ssl-cert.key /etc/postfix/ssl-cert.pem > /etc/postfix/ssl-key-cert.pem
 
-postconf -X smtpd_tls_cert_file smtpd_tls_eccert_file smtpd_tls_dcert_file
-postconf -e smtpd_tls_chain_files=/etc/postfix/ssl-key-cert.pem
-postconf -e smtpd_tls_key_file=/etc/postfix/ssl-cert.key
+postconf -e smtpd_tls_cert_file=/etc/postfix/ssl/cert.pem
+# smtpd_tls_eccert_file smtpd_tls_dcert_file
+#postconf -e smtpd_tls_chain_files=/etc/postfix/ssl-key-cert.pem
+postconf -e smtpd_tls_key_file=/etc/postfix/ssl/key.pem
 
 echo ">> reducing the amount of spam processed by postfix"
 # https://www.howtoforge.com/virtual_postfix_antispam
