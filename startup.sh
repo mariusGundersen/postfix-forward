@@ -84,7 +84,7 @@ echo ">> generating certificate"
 
 openssl req -x509 -newkey rsa:4096 -keyout /etc/postfix/ssl-cert.key -out /etc/postfix/ssl-cert.pem -sha256 -days 3650 -nodes -subj "/C=XX/ST=StateName/L=CityName/O=CompanyName/OU=CompanySectionName/CN=$MAIL_HOST"
 
-echo /etc/postfix/ssl-cert.key /etc/postfix/ssl-cert.pem > /etc/postfix/ssl-key-cert.pem
+cat /etc/postfix/ssl-cert.key /etc/postfix/ssl-cert.pem > /etc/postfix/ssl-key-cert.pem
 
 postconf -X smtpd_tls_cert_file smtpd_tls_eccert_file smtpd_tls_dcert_file
 postconf -e smtpd_tls_chain_files=/etc/postfix/ssl-key-cert.pem
