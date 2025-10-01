@@ -141,6 +141,10 @@ echo ">> Setting postgrey options"
 
 echo 'POSTGREY_OPTS="--inet=127.0.0.1:10023 --delay=60"' > /etc/default/postgrey
 
+echo ">> Fixing dns problem"
+
+echo 'nameserver 8.8.8.8' >> /var/spool/postfix/etc/resolv.conf
+
 # starting services
 echo ">> starting the services"
 
